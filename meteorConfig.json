@@ -1,0 +1,14 @@
+{
+    "initUser": {
+        "account": {
+            "username": "abel",
+            "password": "chispa",
+            "profile": {
+                "name": "Abelaz"
+            }
+        },
+        "roles": [
+            "admin"
+        ]
+    }
+}

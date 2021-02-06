@@ -1,30 +1,45 @@
 <script>
-    import { MaterialApp } from "svelte-materialify";
     import { Router, Route, navigate } from "svelte-routing";
     import Home from "./layouts/Home.svelte";
     import Login from "./layouts/Login.svelte";
-    import { onMount } from "svelte";
-    
-    const sessionData = localStorage.getItem("sessionData");
+    import Admin from "./layouts/Admin.svelte";
+    import NoFound from "./layouts/NoFound.svelte";
+    import Public from "./layouts/Public.svelte";
 
-    if (sessionData) {
-        navigate("/");
+    let checking = false;
+
+    if (!Meteor.userId()) {
+        checking = true;
+        navigate("public");
     } else {
-        navigate("login");
+        Meteor.call("users.isAdmin", (error, isAdmin) => {
+            if (!error) {
+                checking = true;
+                if (isAdmin) {
+                    navigate("admin");
+                } else {
+                    navigate("home");
+                }
+            }
+        });
     }
-
-    onMount(() => {
-        console.log(new Date(), "on Mount App");
-    });
 
     export let url = "";
 </script>
 
-<MaterialApp>
-    <Router {url}>
-        <div>
-            <Route path="/"><Home /></Route>
-            <Route path="login"><Login /></Route>
-        </div>
-    </Router>
-</MaterialApp>
+<Router {url}>
+    <div>
+        {#if checking}
+        <Route path="home"><Home /></Route>
+        <Route path="admin"><Admin /></Route>
+        <Route path="login"><Login /></Route>
+        
+        <Route path="public"><Public /></Route>
+        <Route path="*"><NoFound /></Route>
+            {:else}
+            <h1>Loading ...</h1>
+        {/if}
+        
+
+    </div>
+</Router>
